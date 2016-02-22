@@ -25,7 +25,7 @@ public protocol LoungeDelegate : NSObjectProtocol
     func keyBoardStateChanged(displayed displayed: Bool)
 }
 
-extension LoungeDelegate
+public extension LoungeDelegate
 {
     func keyBoardStateChanged(displayed displayed: Bool)
     {
