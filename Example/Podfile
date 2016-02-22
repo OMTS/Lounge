@@ -1,0 +1,12 @@
+source 'https://github.com/CocoaPods/Specs.git'
+use_frameworks!
+
+target 'Lounge_Example' do
+  pod "Lounge", :path => "../"
+end
+
+target 'Lounge_Tests' do
+  pod "Lounge", :path => "../"
+
+  
+end

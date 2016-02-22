@@ -1,0 +1,6 @@
+framework module Lounge {
+  umbrella header "Lounge-umbrella.h"
+
+  export *
+  module * { export * }
+}
