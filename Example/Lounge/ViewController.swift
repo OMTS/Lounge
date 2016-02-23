@@ -23,7 +23,7 @@ class ViewController: LoungeViewController {
         
         //TODO: customizations
         setPlaceholder("Type here", color: UIColor.darkGrayColor())
-        setSeparatorColor(UIColor.redColor())
+        setSeparatorColor(UIColor(red: 66/255.0, green: 122/255.0, blue: 185/255.0, alpha: 1))
 //        setTopViewHeight(120) // only if you set a top View you can adjust it's height this way
         
     }
@@ -42,12 +42,12 @@ class ViewController: LoungeViewController {
         if let msgId = messageId
         {
             msg.id = msgId + 1
-            msg.text = "I don't understand."
+            msg.text = "Ssshh, it's the quiet room !"
         }
         else
         {
             msg.id = 1
-            msg.text = "Hi Eddy."
+            msg.text = "Hi I'm Blackagar Boltagon, welcome to the quiet room."
         }
         
         return [msg]
@@ -92,11 +92,11 @@ extension ViewController : LoungeDelegate {
     func cellHeightForMessage(message: LoungeMessageProtocol, width: CGFloat) -> CGFloat
     {
         let msg = message as! ChatMessage
-        let widthAvailableForText = width - 20 // we remove the size of constraints
+        let widthAvailableForText = width - 150 // we remove the size of constraints + space we want on the right or left of the bubble
         
         let textHeight = ceil(msg.text.boundingRectWithSize(CGSizeMake(widthAvailableForText, 9999), options: [NSStringDrawingOptions.UsesLineFragmentOrigin, NSStringDrawingOptions.UsesFontLeading], attributes:[NSFontAttributeName: UIFont(name: MessageCellValues.labelFontName, size:  MessageCellValues.labelFontSize)!], context:nil).size.height)
         
-        return textHeight + 10 // we add the size of our constraints
+        return textHeight + 30 // we add the size of our constraints
     }
     
     func messageFromText(text: String) -> LoungeMessageProtocol // given a text as String, you should return the appropriate object conform to LoungeMessageProtocol

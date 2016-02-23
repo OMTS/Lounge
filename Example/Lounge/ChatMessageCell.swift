@@ -22,6 +22,8 @@ class ChatMessageCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
+        
+        textLB.font = UIFont(name: MessageCellValues.labelFontName, size: MessageCellValues.labelFontSize)
     }
 
     override func setSelected(selected: Bool, animated: Bool) {
