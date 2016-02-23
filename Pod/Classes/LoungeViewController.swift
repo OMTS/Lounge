@@ -11,9 +11,6 @@ import UIKit
 public class LoungeViewController: UIViewController {
 
     // MARK: - Properties
-    @IBOutlet weak var topView: UIView?
-    @IBOutlet weak public var tableView: UITableView!
-    
     weak public var dataSource: LoungeDataSource? = nil
     weak public var delegate: LoungeDelegate? = nil
     
@@ -28,17 +25,20 @@ public class LoungeViewController: UIViewController {
         }
     }
     
+    @IBOutlet weak var topView: UIView?
+    @IBOutlet weak public var tableView: UITableView!
     @IBOutlet weak var inputMessageView: LoungeInputView!
     @IBOutlet weak var leftInputView: UIView?
     @IBOutlet weak var textView: UITextView!
     @IBOutlet weak var sendButton: UIButton!
     let separator: UIView = UIView()
     
+    
+    @IBOutlet weak var topViewHeightConstraint: NSLayoutConstraint?
     var textViewTopPadding: NSLayoutConstraint?
     var textViewBottomPadding: NSLayoutConstraint?
     var textViewLeftPadding: NSLayoutConstraint?
     var textViewRightPadding: NSLayoutConstraint?
-    var topViewHeightConstraint: NSLayoutConstraint?
     var textviewHeightConstraint: NSLayoutConstraint?
     var buttonTopPadding: NSLayoutConstraint?
     var buttonBottomPadding: NSLayoutConstraint?
@@ -142,10 +142,9 @@ public class LoungeViewController: UIViewController {
         // pin topView
         if let viewTop = topView {
             self.view.pinSubview(viewTop, on: .Leading)
-            self.view.pinSubview(viewTop, on: .Top)
+            self.view.setSpace(on: .Top, ofView: viewTop, fromView: self.topLayoutGuide)
             self.view.pinSubview(viewTop, on: .Trailing)
             self.view.setSpace(space: 0, on: .Bottom, ofView: viewTop, fromView: tableView)
-            topViewHeightConstraint = viewTop.set(.Height, size: 60)
         }
         else {
             self.view.setSpace(on: .Top, ofView: self.tableView, fromView: self.topLayoutGuide)
@@ -182,7 +181,6 @@ public class LoungeViewController: UIViewController {
             inputMessageView.pinSubview(leftViewMessage, on: .Leading, space : 5)
             inputMessageView.pinSubview(leftViewMessage, on: .Top, relation: .GreaterThanOrEqual, space : 5)
             inputMessageView.pinSubview(leftViewMessage, on: .Bottom, space : 5)
-            
             inputMessageView.setSpace(space: 5, on: .Trailing, ofView: leftViewMessage, fromView: textView)
         }
         else {

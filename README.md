@@ -40,9 +40,21 @@ To run the example project, clone the repo, and run `pod install` from the Examp
 You can customise :
 
 * Anything you want from the storyboard (except the constraints)
-* The top view height with **setTopViewHeight** (if you did set a view at the top of the table view)
 * The textView placeholder with **setPlaceHolder**
 * A line on top of the input view with **setSeparatorColor**
+
+#### Optional views
+
+You can link several views to existing IBOutlet if needed, the constraints of theses views are not reinitialized.
+
+* topView
+
+The topView is a view displayed on top of the tableview, when used, you also need to link his height constraint to the **topViewHeightConstraint** IBOutlet.
+You can update the height of this view via **setTopViewHeight(height: CGFloat)**.
+
+* leftInputView
+
+The leftInputView is a view displayed on the left of the textView.
 
 ## Requirements
 
