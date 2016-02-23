@@ -54,7 +54,7 @@ Lounge is available through [CocoaPods](http://cocoapods.org). To install
 it, simply add the following line to your Podfile:
 
 ```ruby
-pod "Lounge"
+pod "Lounge", :git => 'https://github.com/OMTS/Lounge.git'
 ```
 
 ## Author
