@@ -56,6 +56,10 @@ You can update the height of this view via **setTopViewHeight(height: CGFloat)**
 
 The leftInputView is a view displayed on the left of the textView.
 
+* emptyStateView
+
+The emptyStateView is a view displayed when there is no message to show. it's frame is the same as the tableView.
+
 ## Requirements
 
 * iOS 8.0+

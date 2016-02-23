@@ -31,8 +31,8 @@
                                             </userDefinedRuntimeAttribute>
                                         </userDefinedRuntimeAttributes>
                                     </textView>
-                                    <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XvI-yN-MQr">
-                                        <rect key="frame" x="274" y="11" width="36" height="30"/>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XvI-yN-MQr">
+                                        <rect key="frame" x="274" y="10" width="36" height="30"/>
                                         <state key="normal" title="Send">
                                             <color key="titleColor" red="0.25882352939999997" green="0.47843137250000001" blue="0.72549019609999998" alpha="1" colorSpace="calibratedRGB"/>
                                         </state>
@@ -52,6 +52,21 @@
                                     <constraint firstAttribute="bottom" secondItem="0ms-cR-Vfx" secondAttribute="bottom" constant="10" id="sv0-Le-2gf"/>
                                 </constraints>
                             </view>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="aVe-pl-dco">
+                                <rect key="frame" x="0.0" y="64" width="320" height="454"/>
+                                <subviews>
+                                    <imageView userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="quietRoom" translatesAutoresizingMaskIntoConstraints="NO" id="7P6-xb-elo">
+                                        <rect key="frame" x="0.0" y="0.0" width="320" height="454"/>
+                                    </imageView>
+                                </subviews>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstItem="7P6-xb-elo" firstAttribute="top" secondItem="aVe-pl-dco" secondAttribute="top" id="CpX-Db-4ze"/>
+                                    <constraint firstAttribute="trailing" secondItem="7P6-xb-elo" secondAttribute="trailing" id="Hsc-As-Kmj"/>
+                                    <constraint firstItem="7P6-xb-elo" firstAttribute="leading" secondItem="aVe-pl-dco" secondAttribute="leading" id="Yqx-cf-JWf"/>
+                                    <constraint firstAttribute="bottom" secondItem="7P6-xb-elo" secondAttribute="bottom" id="hWj-C2-jGE"/>
+                                </constraints>
+                            </view>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" allowsSelection="NO" rowHeight="55" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="A1T-hv-SxJ">
                                 <rect key="frame" x="0.0" y="64" width="320" height="454"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
@@ -63,8 +78,8 @@
                                             <rect key="frame" x="0.0" y="0.0" width="320" height="55"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" misplaced="YES" animating="YES" style="white" translatesAutoresizingMaskIntoConstraints="NO" id="MZc-Cf-72P">
-                                                    <rect key="frame" x="150" y="12" width="20" height="20"/>
+                                                <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" animating="YES" style="white" translatesAutoresizingMaskIntoConstraints="NO" id="MZc-Cf-72P">
+                                                    <rect key="frame" x="150" y="18" width="20" height="20"/>
                                                 </activityIndicatorView>
                                             </subviews>
                                             <constraints>
@@ -126,10 +141,10 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="7cT-11-6hh">
-                                                    <rect key="frame" x="10" y="10" width="146" height="35"/>
+                                                    <rect key="frame" x="10" y="10" width="145.5" height="35"/>
                                                     <subviews>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Others Message" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Si7-hO-edX">
-                                                            <rect key="frame" x="10" y="5" width="126" height="25"/>
+                                                            <rect key="frame" x="10" y="5" width="125.5" height="25"/>
                                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                             <color key="textColor" red="0.1764705882" green="0.17254901959999999" blue="0.20784313730000001" alpha="1" colorSpace="calibratedRGB"/>
@@ -193,10 +208,14 @@
                             <constraint firstAttribute="trailing" secondItem="R4q-xm-SFE" secondAttribute="trailing" id="NFJ-8N-7vP"/>
                             <constraint firstAttribute="trailing" secondItem="6tv-9H-sPF" secondAttribute="trailing" id="ObU-MI-9nZ"/>
                             <constraint firstItem="A1T-hv-SxJ" firstAttribute="top" secondItem="R4q-xm-SFE" secondAttribute="bottom" id="Psv-mw-JGV"/>
+                            <constraint firstItem="aVe-pl-dco" firstAttribute="bottom" secondItem="A1T-hv-SxJ" secondAttribute="bottom" id="QYc-Yd-9BM"/>
                             <constraint firstItem="R4q-xm-SFE" firstAttribute="top" secondItem="jyV-Pf-zRb" secondAttribute="bottom" id="T6h-jQ-pQJ"/>
                             <constraint firstItem="R4q-xm-SFE" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leading" id="aOq-4A-BGL"/>
+                            <constraint firstItem="aVe-pl-dco" firstAttribute="leading" secondItem="A1T-hv-SxJ" secondAttribute="leading" id="cVU-vk-4iy"/>
                             <constraint firstItem="A1T-hv-SxJ" firstAttribute="top" secondItem="jyV-Pf-zRb" secondAttribute="bottom" id="dWr-YS-XDf"/>
                             <constraint firstItem="A1T-hv-SxJ" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leading" id="fFR-1T-RBB"/>
+                            <constraint firstItem="aVe-pl-dco" firstAttribute="top" secondItem="A1T-hv-SxJ" secondAttribute="top" id="grl-k2-a8z"/>
+                            <constraint firstItem="aVe-pl-dco" firstAttribute="trailing" secondItem="A1T-hv-SxJ" secondAttribute="trailing" id="hqS-0Q-wsH"/>
                         </constraints>
                         <variation key="default">
                             <mask key="constraints">
@@ -207,6 +226,7 @@
                     <navigationItem key="navigationItem" id="LoD-qr-Tcy"/>
                     <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>
                     <connections>
+                        <outlet property="emptyStateView" destination="aVe-pl-dco" id="scf-2g-EiM"/>
                         <outlet property="inputMessageView" destination="6tv-9H-sPF" id="ak5-u8-aPV"/>
                         <outlet property="sendButton" destination="XvI-yN-MQr" id="EB9-F8-5Dt"/>
                         <outlet property="tableView" destination="A1T-hv-SxJ" id="bc5-Sf-ikD"/>
@@ -240,4 +260,7 @@
             <point key="canvasLocation" x="555" y="465"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="quietRoom" width="216" height="235"/>
+    </resources>
 </document>

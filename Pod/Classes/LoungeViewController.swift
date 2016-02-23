@@ -11,10 +11,45 @@ import UIKit
 public class LoungeViewController: UIViewController {
 
     // MARK: - Properties
+    
+    //data
     weak public var dataSource: LoungeDataSource? = nil
     weak public var delegate: LoungeDelegate? = nil
     
-    var messageArray : [LoungeMessageProtocol] = [LoungeMessageProtocol]()
+    var messageArray : [LoungeMessageProtocol] = [LoungeMessageProtocol]() {
+        didSet {
+            
+            if let emptyStateView = emptyStateView
+            {
+                if oldValue.count == 0 && messageArray.count > 0
+                {
+                    // hide empty state
+                    tableView.alpha = 0
+                    tableView.hidden = false
+                    UIView.animateWithDuration(0.2, animations: { () -> Void in
+                        emptyStateView.alpha = 0
+                        self.tableView.alpha = 1
+                        }, completion: { (terminated) -> Void in
+                            emptyStateView.hidden = true
+                            emptyStateView.alpha = 1
+                    })
+                }
+                else if oldValue.count > 0 && messageArray.count == 0
+                {
+                    // display empty state
+                    emptyStateView.alpha = 0
+                    emptyStateView.hidden = false
+                    UIView.animateWithDuration(0.2, animations: { () -> Void in
+                        emptyStateView.alpha = 1
+                        self.tableView.alpha = 0
+                        }, completion: { (terminated) -> Void in
+                            self.tableView.hidden = true
+                            self.tableView.alpha = 1
+                    })
+                }
+            }
+        }
+    }
     var hasMoreToLoad = false
     var maxLoadedMessages = 20
     var tmpId = -1
@@ -24,26 +59,6 @@ public class LoungeViewController: UIViewController {
             return inputMessageView
         }
     }
-    
-    @IBOutlet weak var topView: UIView?
-    @IBOutlet weak public var tableView: UITableView!
-    @IBOutlet weak var inputMessageView: LoungeInputView!
-    @IBOutlet weak var leftInputView: UIView?
-    @IBOutlet weak var textView: UITextView!
-    @IBOutlet weak var sendButton: UIButton!
-    let separator: UIView = UIView()
-    
-    
-    @IBOutlet weak var topViewHeightConstraint: NSLayoutConstraint?
-    var textViewTopPadding: NSLayoutConstraint?
-    var textViewBottomPadding: NSLayoutConstraint?
-    var textViewLeftPadding: NSLayoutConstraint?
-    var textViewRightPadding: NSLayoutConstraint?
-    var textviewHeightConstraint: NSLayoutConstraint?
-    var buttonTopPadding: NSLayoutConstraint?
-    var buttonBottomPadding: NSLayoutConstraint?
-    var buttonRightPadding: NSLayoutConstraint?
-    var placeholderLabel: UILabel?
     
     var sendButtonEnabled: Bool = true { // This let you manage the send button status (e.g.: when network connection is lost)
         didSet {
@@ -65,14 +80,44 @@ public class LoungeViewController: UIViewController {
         }
     }
     
+    //views
+    @IBOutlet weak var topView: UIView?
+    @IBOutlet weak var emptyStateView: UIView?
+    @IBOutlet weak public var tableView: UITableView!
+    @IBOutlet weak var inputMessageView: LoungeInputView!
+    @IBOutlet weak var leftInputView: UIView?
+    @IBOutlet weak var textView: UITextView!
+    @IBOutlet weak var sendButton: UIButton!
+    let separator: UIView = UIView()
+    var placeholderLabel: UILabel?
+
+    
+    //constraints
+    @IBOutlet weak var topViewHeightConstraint: NSLayoutConstraint?
+    var textViewTopPadding: NSLayoutConstraint?
+    var textViewBottomPadding: NSLayoutConstraint?
+    var textViewLeftPadding: NSLayoutConstraint?
+    var textViewRightPadding: NSLayoutConstraint?
+    var textviewHeightConstraint: NSLayoutConstraint?
+    var buttonTopPadding: NSLayoutConstraint?
+    var buttonBottomPadding: NSLayoutConstraint?
+    var buttonRightPadding: NSLayoutConstraint?
+    var emptyStateBottomConstraint: NSLayoutConstraint?
+    
     // MARK: - lifeCycle methods
     
     override public func viewDidLoad() {
         super.viewDidLoad()
         
         tableView.keyboardDismissMode = UIScrollViewKeyboardDismissMode.Interactive
-        tableView.delegate = self;
-        tableView.dataSource = self;
+        tableView.delegate = self
+        tableView.dataSource = self
+        
+        if let emptyStateView = emptyStateView
+        {
+            tableView.hidden = true
+            emptyStateView.hidden = false
+        }
         
         sendButton.enabled = false
         
@@ -192,6 +237,14 @@ public class LoungeViewController: UIViewController {
         textViewBottomPadding = inputMessageView.pinSubview(textView, on: .Bottom, space : 5)
         textViewRightPadding = inputMessageView.setSpace(space: 15, on: .Leading, ofView: sendButton, fromView: textView)
         textviewHeightConstraint = textView.set(.Height, size: 35)
+        
+        // empty state view
+        if let emptyStateView = emptyStateView {
+            self.view.align(emptyStateView, andTheView: tableView, on: .Top)
+            emptyStateBottomConstraint = self.view.align(emptyStateView, andTheView: tableView, on: .Bottom)
+            self.view.align(emptyStateView, andTheView: tableView, on: .Right)
+            self.view.align(emptyStateView, andTheView: tableView, on: .Left)
+        }
     }
     
     override public func viewWillAppear(animated: Bool) {
@@ -216,6 +269,7 @@ public class LoungeViewController: UIViewController {
         
         if let keyboardSize = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.CGRectValue() {
             tableView.contentInset = UIEdgeInsetsMake(0, 0, keyboardSize.height, 0)
+            emptyStateBottomConstraint?.constant = -keyboardSize.height
             self.view.layoutIfNeeded()
             if keyboardSize.height > inputMessageView.frame.size.height {
                 self.scrollToLastCell()
