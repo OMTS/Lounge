@@ -13,6 +13,7 @@
 * [x] Browse chat history
 * [x] Text placeholder
 * [x] Auto enabling of send button
+* [x] Optional empty state view
 
 ## Example
 
