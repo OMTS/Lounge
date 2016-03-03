@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = "Lounge"
-  s.version          = "0.2.0"
+  s.version          = "0.2.1"
   s.summary          = "A subclass of UIViewController for chat screens."
 
 # This description is used to generate tags and improve search results.

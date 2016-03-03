@@ -60,7 +60,7 @@ public class LoungeViewController: UIViewController {
         }
     }
     
-    var sendButtonEnabled: Bool = true { // This let you manage the send button status (e.g.: when network connection is lost)
+    public var sendButtonEnabled: Bool = true { // This let you manage the send button status (e.g.: when network connection is lost)
         didSet {
             if let sendButton = sendButton
             {
