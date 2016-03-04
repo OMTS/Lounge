@@ -504,15 +504,12 @@ extension LoungeViewController: UITableViewDelegate {
                 
                 var indexPaths : [NSIndexPath] = []
                 
-                var count = 1
-                
-                for message in messages {
+                for (index, message) in messages.enumerate() {
                     self.messageArray.insert(message, atIndex: 0)
-                    indexPaths.append(NSIndexPath(forRow: count, inSection: 0))
-                    count++
+                    indexPaths.append(NSIndexPath(forRow: index + 1, inSection: 0))
                 }
                 
-                let yOflastCell = self.tableView.rectForRowAtIndexPath(NSIndexPath(forRow: 1, inSection: 0)).origin.y
+                let yOfLastCell = self.tableView.rectForRowAtIndexPath(NSIndexPath(forRow: 1, inSection: 0)).origin.y
                 
                 if indexPaths.count > 0 {
                     UIView.setAnimationsEnabled(false)
@@ -521,7 +518,7 @@ extension LoungeViewController: UITableViewDelegate {
                     self.tableView.endUpdates()
                     UIView.setAnimationsEnabled(true)
                     
-                    let newY = self.tableView.rectForRowAtIndexPath(NSIndexPath(forRow: count, inSection: 0)).origin.y - yOflastCell
+                    let newY = self.tableView.rectForRowAtIndexPath(NSIndexPath(forRow: messages.count, inSection: 0)).origin.y - yOfLastCell
                     
                     self.tableView.setContentOffset(CGPointMake(0, newY), animated: false)
                 }
