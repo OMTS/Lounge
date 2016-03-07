@@ -518,7 +518,7 @@ extension LoungeViewController: UITableViewDelegate {
                     self.tableView.endUpdates()
                     UIView.setAnimationsEnabled(true)
                     
-                    let newY = self.tableView.rectForRowAtIndexPath(NSIndexPath(forRow: messages.count, inSection: 0)).origin.y - yOfLastCell
+                    let newY = self.tableView.rectForRowAtIndexPath(NSIndexPath(forRow: messages.count + 1, inSection: 0)).origin.y - yOfLastCell
                     
                     self.tableView.setContentOffset(CGPointMake(0, newY), animated: false)
                 }
