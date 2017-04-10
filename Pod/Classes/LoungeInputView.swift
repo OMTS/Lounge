@@ -9,9 +9,7 @@
 import UIKit
 
 class LoungeInputView: UIView {
-
-    override func intrinsicContentSize() -> CGSize {
-        return CGSizeZero
+    override var intrinsicContentSize : CGSize {
+        return CGSize.zero
     }
-
 }
