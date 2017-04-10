@@ -520,26 +520,22 @@ extension LoungeViewController: UITableViewDelegate {
             dataSource!.getOldMessages(maxLoadedMessages, beforeMessage: messageArray.first!, completion: { messages in
                 
                 var indexPaths : [IndexPath] = []
-                
-                var count = 1
-                
-                for message in messages {
+
+                for (index, message) in messages.enumerated() {
                     self.messageArray.insert(message, at: 0)
-                    indexPaths.append(IndexPath(row: count, section: 0))
-                    count += 1
+                    indexPaths.append(IndexPath(row: index + 1, section: 0))
                 }
                 
-                let yOflastCell = self.tableView.rectForRow(at: IndexPath(row: 1, section: 0)).origin.y
-                
+                let yOfLastCell = self.tableView.rectForRow(at: IndexPath(row: 1, section: 0)).origin.y
                 if indexPaths.count > 0 {
                     UIView.setAnimationsEnabled(false)
                     self.tableView.beginUpdates()
                     self.tableView.insertRows(at: indexPaths, with: .none)
                     self.tableView.endUpdates()
                     UIView.setAnimationsEnabled(true)
-                    
-                    let newY = self.tableView.rectForRow(at: IndexPath(row: count, section: 0)).origin.y - yOflastCell
-                    
+
+                    let newY = self.tableView.rectForRow(at: IndexPath(row: messages.count + 1, section: 0)).origin.y - yOfLastCell
+
                     self.tableView.setContentOffset(CGPoint(x: 0, y: newY), animated: false)
                 }
                 
