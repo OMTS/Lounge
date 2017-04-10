@@ -28,6 +28,10 @@ class ViewController: LoungeViewController {
         
     }
     
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
+    }
+    
     // demo only
     func fakeServerCallBack()
     {
@@ -50,7 +54,28 @@ class ViewController: LoungeViewController {
             msg.text = "Hi I'm Blackagar Boltagon, welcome to the quiet room."
         }
         
+        if msg.id == 3 {
+            self.displayAlert()
+        }
+        
         return [msg]
+    }
+    
+    func displayAlert()
+    {
+        let alert = UIAlertController(title: "I said Ssshh!", message: "(This is for testing that the inputAccessoryView is still present when alert is fired)", preferredStyle: .Alert)
+        
+        let dismissAction = UIAlertAction(title: NSLocalizedString("Cancel", comment: ""), style: .Cancel, handler: { _ in
+//            self.becomeFirstResponder()
+            })
+        alert.addAction(dismissAction)
+        
+//        let otherAction = UIAlertAction(title: NSLocalizedString("Default", comment: ""), style: .Default, handler: { _ in
+//            self.becomeFirstResponder()
+//        })
+//        alert.addAction(otherAction)
+        
+        self.presentViewController(alert, animated: true, completion: nil)
     }
 }
 

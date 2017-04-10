@@ -90,7 +90,6 @@ public class LoungeViewController: UIViewController {
     @IBOutlet weak var sendButton: UIButton!
     let separator: UIView = UIView()
     var placeholderLabel: UILabel?
-
     
     //constraints
     @IBOutlet weak var topViewHeightConstraint: NSLayoutConstraint?
@@ -252,6 +251,7 @@ public class LoungeViewController: UIViewController {
         
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardWillShow:", name: UIKeyboardWillShowNotification, object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardWillHide:", name: UIKeyboardWillHideNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardDidHide:", name: UIKeyboardDidHideNotification, object: nil)
     }
     
     override public func viewDidAppear(animated: Bool) {
@@ -285,6 +285,10 @@ public class LoungeViewController: UIViewController {
     func keyboardWillHide(notification: NSNotification) {
         tableView.contentInset = UIEdgeInsetsMake(0, 0, 0, 0)
         self.view.layoutIfNeeded()
+    }
+    
+    func keyboardDidHide(notification: NSNotification) {
+        self.becomeFirstResponder()
     }
     
     func scrollToLastCell(animated: Bool = true) {

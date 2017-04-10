@@ -8,5 +8,5 @@ end
 target 'Lounge_Tests' do
   pod "Lounge", :path => "../"
 
-  
+
 end
