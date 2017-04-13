@@ -14,7 +14,7 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = 'primary'
-               BlueprintIdentifier = 'AC01355CFFD1B33DCF382FC0'
+               BlueprintIdentifier = '18DF8F03119792DFD4A4F4927C6FF324'
                BlueprintName = 'Lounge-Lounge'
                ReferencedContainer = 'container:Pods.xcodeproj'
                BuildableName = 'Lounge.bundle'>

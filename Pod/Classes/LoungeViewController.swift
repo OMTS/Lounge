@@ -7,14 +7,27 @@
 //
 
 import UIKit
+// FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
+// Consider refactoring the code to use the non-optional operators.
+fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l < r
+  case (nil, _?):
+    return true
+  default:
+    return false
+  }
+}
 
-public class LoungeViewController: UIViewController {
+
+open class LoungeViewController: UIViewController {
 
     // MARK: - Properties
     
     //data
-    weak public var dataSource: LoungeDataSource? = nil
-    weak public var delegate: LoungeDelegate? = nil
+    weak open var dataSource: LoungeDataSource? = nil
+    weak open var delegate: LoungeDelegate? = nil
     
     var messageArray : [LoungeMessageProtocol] = [LoungeMessageProtocol]() {
         didSet {
@@ -25,12 +38,12 @@ public class LoungeViewController: UIViewController {
                 {
                     // hide empty state
                     tableView.alpha = 0
-                    tableView.hidden = false
-                    UIView.animateWithDuration(0.2, animations: { () -> Void in
+                    tableView.isHidden = false
+                    UIView.animate(withDuration: 0.2, animations: { () -> Void in
                         emptyStateView.alpha = 0
                         self.tableView.alpha = 1
                         }, completion: { (terminated) -> Void in
-                            emptyStateView.hidden = true
+                            emptyStateView.isHidden = true
                             emptyStateView.alpha = 1
                     })
                 }
@@ -38,12 +51,12 @@ public class LoungeViewController: UIViewController {
                 {
                     // display empty state
                     emptyStateView.alpha = 0
-                    emptyStateView.hidden = false
-                    UIView.animateWithDuration(0.2, animations: { () -> Void in
+                    emptyStateView.isHidden = false
+                    UIView.animate(withDuration: 0.2, animations: { () -> Void in
                         emptyStateView.alpha = 1
                         self.tableView.alpha = 0
                         }, completion: { (terminated) -> Void in
-                            self.tableView.hidden = true
+                            self.tableView.isHidden = true
                             self.tableView.alpha = 1
                     })
                 }
@@ -54,26 +67,26 @@ public class LoungeViewController: UIViewController {
     var maxLoadedMessages = 20
     var tmpId = -1
     
-    override public var inputAccessoryView: UIView? {
+    override open var inputAccessoryView: UIView? {
         get {
             return inputMessageView
         }
     }
     
-    public var sendButtonEnabled: Bool = true { // This let you manage the send button status (e.g.: when network connection is lost)
+    open var sendButtonEnabled: Bool = true { // This let you manage the send button status (e.g.: when network connection is lost)
         didSet {
             if let sendButton = sendButton
             {
-                if sendButton.enabled == true && sendButtonEnabled == false
+                if sendButton.isEnabled == true && sendButtonEnabled == false
                 {
-                    sendButton.enabled = false
+                    sendButton.isEnabled = false
                 }
                 
-                if (sendButton.enabled == false && sendButtonEnabled == true)
+                if (sendButton.isEnabled == false && sendButtonEnabled == true)
                 {
                     if textView.text.characters.count > 0
                     {
-                        sendButton.enabled = true
+                        sendButton.isEnabled = true
                     }
                 }
             }
@@ -83,14 +96,13 @@ public class LoungeViewController: UIViewController {
     //views
     @IBOutlet weak var topView: UIView?
     @IBOutlet weak var emptyStateView: UIView?
-    @IBOutlet weak public var tableView: UITableView!
+    @IBOutlet weak open var tableView: UITableView!
     @IBOutlet weak var inputMessageView: LoungeInputView!
     @IBOutlet weak var leftInputView: UIView?
     @IBOutlet weak var textView: UITextView!
     @IBOutlet weak var sendButton: UIButton!
     let separator: UIView = UIView()
     var placeholderLabel: UILabel?
-
     
     //constraints
     @IBOutlet weak var topViewHeightConstraint: NSLayoutConstraint?
@@ -106,25 +118,25 @@ public class LoungeViewController: UIViewController {
     
     // MARK: - lifeCycle methods
     
-    override public func viewDidLoad() {
+    override open func viewDidLoad() {
         super.viewDidLoad()
         
-        tableView.keyboardDismissMode = UIScrollViewKeyboardDismissMode.Interactive
+        tableView.keyboardDismissMode = UIScrollViewKeyboardDismissMode.interactive
         tableView.delegate = self
         tableView.dataSource = self
         
         if let emptyStateView = emptyStateView
         {
-            tableView.hidden = true
-            emptyStateView.hidden = false
+            tableView.isHidden = true
+            emptyStateView.isHidden = false
         }
         
-        sendButton.enabled = false
+        sendButton.isEnabled = false
         
         textView.delegate = self
-        sendButton.addTarget(self, action: "sendClicked", forControlEvents: .TouchUpInside)
+        sendButton.addTarget(self, action: "sendClicked", for: .touchUpInside)
         
-        if self.canBecomeFirstResponder() {
+        if self.canBecomeFirstResponder {
             self.becomeFirstResponder()
         }
         
@@ -150,16 +162,15 @@ public class LoungeViewController: UIViewController {
             else // error or no internet what do we do ?
             {
                 let delayInSeconds = 1.0
-                let time = dispatch_time(DISPATCH_TIME_NOW,
-                    Int64(delayInSeconds * Double(NSEC_PER_SEC)))
-                dispatch_after(time, dispatch_get_main_queue()) {
+                let time = DispatchTime.now() + Double(Int64(delayInSeconds * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)
+                DispatchQueue.main.asyncAfter(deadline: time) {
                     self.getLastMessages() // we call it again
                 }
             }
         }
     }
     
-    override public func canBecomeFirstResponder() -> Bool {
+    override open var canBecomeFirstResponder : Bool {
         return true
     }
     
@@ -186,20 +197,20 @@ public class LoungeViewController: UIViewController {
 
         // pin topView
         if let viewTop = topView {
-            self.view.pinSubview(viewTop, on: .Leading)
-            self.view.setSpace(on: .Top, ofView: viewTop, fromView: self.topLayoutGuide)
-            self.view.pinSubview(viewTop, on: .Trailing)
-            self.view.setSpace(space: 0, on: .Bottom, ofView: viewTop, fromView: tableView)
+            self.view.pinSubview(viewTop, on: .leading)
+            self.view.setSpace(on: .top, ofView: viewTop, fromView: self.topLayoutGuide)
+            self.view.pinSubview(viewTop, on: .trailing)
+            self.view.setSpace(space: 0, on: .bottom, ofView: viewTop, fromView: tableView)
         }
         else {
-            self.view.setSpace(on: .Top, ofView: self.tableView, fromView: self.topLayoutGuide)
+            self.view.setSpace(on: .top, ofView: self.tableView, fromView: self.topLayoutGuide)
 //            self.view.pinSubview(tableView, on: .Top)
         }
         
         // pin tableView
-        self.view.pinSubview(tableView, on: .Leading)
-        self.view.pinSubview(tableView, on: .Trailing)
-        self.view.pinSubview(tableView, on: .Bottom)
+        self.view.pinSubview(tableView, on: .leading)
+        self.view.pinSubview(tableView, on: .trailing)
+        self.view.pinSubview(tableView, on: .bottom)
         
         // input message view
         inputMessageView.removeFromSuperview()
@@ -207,67 +218,68 @@ public class LoungeViewController: UIViewController {
         
         // separator
         separator.translatesAutoresizingMaskIntoConstraints = false
-        separator.backgroundColor = UIColor.clearColor()
+        separator.backgroundColor = UIColor.clear
         inputMessageView.addSubview(separator)
-        inputMessageView.pinSubview(separator, on: .Top)
-        inputMessageView.pinSubview(separator, on: .Leading)
-        inputMessageView.pinSubview(separator, on: .Trailing)
-        separator.set(.Height, size: 0.5)
+        inputMessageView.pinSubview(separator, on: .top)
+        inputMessageView.pinSubview(separator, on: .leading)
+        inputMessageView.pinSubview(separator, on: .trailing)
+        separator.set(.height, size: 0.5)
         
         // send button
-        buttonRightPadding = inputMessageView.pinSubview(sendButton, on: .Trailing, space : 15)
-        buttonTopPadding = inputMessageView.pinSubview(sendButton, on: .Top, relation: .GreaterThanOrEqual, space: 5)
-        buttonBottomPadding = inputMessageView.pinSubview(sendButton, on: .Bottom, space : 5)
-        sendButton.set(.Height, size: 35)
+        buttonRightPadding = inputMessageView.pinSubview(sendButton, on: .trailing, space : 15)
+        buttonTopPadding = inputMessageView.pinSubview(sendButton, on: .top, relation: .greaterThanOrEqual, space: 5)
+        buttonBottomPadding = inputMessageView.pinSubview(sendButton, on: .bottom, space : 5)
+        sendButton.set(.height, size: 35)
 
         
         // left input View
         if let leftViewMessage = leftInputView {
-            inputMessageView.pinSubview(leftViewMessage, on: .Leading, space : 5)
-            inputMessageView.pinSubview(leftViewMessage, on: .Top, relation: .GreaterThanOrEqual, space : 5)
-            inputMessageView.pinSubview(leftViewMessage, on: .Bottom, space : 5)
-            inputMessageView.setSpace(space: 5, on: .Trailing, ofView: leftViewMessage, fromView: textView)
+            inputMessageView.pinSubview(leftViewMessage, on: .leading, space : 5)
+            inputMessageView.pinSubview(leftViewMessage, on: .top, relation: .greaterThanOrEqual, space : 5)
+            inputMessageView.pinSubview(leftViewMessage, on: .bottom, space : 5)
+            inputMessageView.setSpace(space: 5, on: .trailing, ofView: leftViewMessage, fromView: textView)
         }
         else {
-            textViewLeftPadding = inputMessageView.pinSubview(textView, on: .Leading, space: 15)
+            textViewLeftPadding = inputMessageView.pinSubview(textView, on: .leading, space: 15)
         }
         
         // textView
-        textViewTopPadding = inputMessageView.pinSubview(textView, on: .Top, space : 5)
-        textViewBottomPadding = inputMessageView.pinSubview(textView, on: .Bottom, space : 5)
-        textViewRightPadding = inputMessageView.setSpace(space: 15, on: .Leading, ofView: sendButton, fromView: textView)
-        textviewHeightConstraint = textView.set(.Height, size: 35)
+        textViewTopPadding = inputMessageView.pinSubview(textView, on: .top, space : 5)
+        textViewBottomPadding = inputMessageView.pinSubview(textView, on: .bottom, space : 5)
+        textViewRightPadding = inputMessageView.setSpace(space: 15, on: .leading, ofView: sendButton, fromView: textView)
+        textviewHeightConstraint = textView.set(.height, size: 35)
         
         // empty state view
         if let emptyStateView = emptyStateView {
-            self.view.align(emptyStateView, andTheView: tableView, on: .Top)
-            emptyStateBottomConstraint = self.view.align(emptyStateView, andTheView: tableView, on: .Bottom)
-            self.view.align(emptyStateView, andTheView: tableView, on: .Right)
-            self.view.align(emptyStateView, andTheView: tableView, on: .Left)
+            self.view.align(emptyStateView, andTheView: tableView, on: .top)
+            emptyStateBottomConstraint = self.view.align(emptyStateView, andTheView: tableView, on: .bottom)
+            self.view.align(emptyStateView, andTheView: tableView, on: .right)
+            self.view.align(emptyStateView, andTheView: tableView, on: .left)
         }
     }
     
-    override public func viewWillAppear(animated: Bool) {
+    override open func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardWillShow:", name: UIKeyboardWillShowNotification, object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardWillHide:", name: UIKeyboardWillHideNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: "keyboardWillShow:", name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.addObserver(self, selector: "keyboardWillHide:", name: NSNotification.Name.UIKeyboardWillHide, object: nil)
+        NotificationCenter.default.addObserver(self, selector: "keyboardDidHide:", name: NSNotification.Name.UIKeyboardDidHide, object: nil)
     }
     
-    override public func viewDidAppear(animated: Bool) {
+    override open func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
     }
     
-    override public func viewWillDisappear(animated: Bool) {
+    override open func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        NSNotificationCenter.defaultCenter().removeObserver(self)
+        NotificationCenter.default.removeObserver(self)
     }
     
-    func keyboardWillShow(notification: NSNotification) {
+    func keyboardWillShow(_ notification: Notification) {
         
-        if let keyboardSize = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.CGRectValue() {
+        if let keyboardSize = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
             tableView.contentInset = UIEdgeInsetsMake(0, 0, keyboardSize.height, 0)
             emptyStateBottomConstraint?.constant = -keyboardSize.height
             self.view.layoutIfNeeded()
@@ -282,15 +294,19 @@ public class LoungeViewController: UIViewController {
         }
     }
     
-    func keyboardWillHide(notification: NSNotification) {
+    func keyboardWillHide(_ notification: Notification) {
         tableView.contentInset = UIEdgeInsetsMake(0, 0, 0, 0)
         self.view.layoutIfNeeded()
     }
     
-    func scrollToLastCell(animated: Bool = true) {
-        if tableView.numberOfRowsInSection(0) > 0 {
-            let lastIndexPath = NSIndexPath(forRow: tableView.numberOfRowsInSection(0) - 1, inSection: 0)
-            tableView.scrollToRowAtIndexPath(lastIndexPath, atScrollPosition: .Bottom, animated: animated)
+    func keyboardDidHide(_ notification: Notification) {
+        self.becomeFirstResponder()
+    }
+    
+    func scrollToLastCell(_ animated: Bool = true) {
+        if tableView.numberOfRows(inSection: 0) > 0 {
+            let lastIndexPath = IndexPath(row: tableView.numberOfRows(inSection: 0) - 1, section: 0)
+            tableView.scrollToRow(at: lastIndexPath, at: .bottom, animated: animated)
         }
     }
     
@@ -304,13 +320,13 @@ public class LoungeViewController: UIViewController {
     // MARK: - Methods for subclasses
     // MARK: Customization
     
-    public func setTopViewHeight(height: CGFloat) {
+    open func setTopViewHeight(_ height: CGFloat) {
         topViewHeightConstraint?.constant = height
         self.view.layoutIfNeeded()
     }
     
     
-    public func setPlaceholder(text: String, color: UIColor = UIColor.lightGrayColor()) {
+    open func setPlaceholder(_ text: String, color: UIColor = UIColor.lightGray) {
         if (placeholderLabel == nil) {
             self.placeholderLabel = UILabel()
             inputMessageView.addSubview(placeholderLabel!)
@@ -318,19 +334,19 @@ public class LoungeViewController: UIViewController {
             placeholderLabel!.translatesAutoresizingMaskIntoConstraints = false
             placeholderLabel?.font = textView.font
             
-            inputMessageView.align(placeholderLabel!, andTheView: textView, on: .Top, space:  textView.contentInset.top)
-            inputMessageView.align(placeholderLabel!, andTheView: textView, on: .Bottom, space:  textView.contentInset.bottom)
-            inputMessageView.align(placeholderLabel!, andTheView: textView, on: .Leading, space: 5)
+            inputMessageView.align(placeholderLabel!, andTheView: textView, on: .top, space:  textView.contentInset.top)
+            inputMessageView.align(placeholderLabel!, andTheView: textView, on: .bottom, space:  textView.contentInset.bottom)
+            inputMessageView.align(placeholderLabel!, andTheView: textView, on: .leading, space: 5)
         }
         
         placeholderLabel!.text = text
     }
     
-    public func setSeparatorColor(color: UIColor) {
+    open func setSeparatorColor(_ color: UIColor) {
         separator.backgroundColor = color
     }
     
-    public func setPadding(verticalPadding: CGFloat, horizontalPadding: CGFloat) {
+    open func setPadding(_ verticalPadding: CGFloat, horizontalPadding: CGFloat) {
         textViewTopPadding?.constant = verticalPadding
         textViewBottomPadding?.constant = verticalPadding
         textViewLeftPadding?.constant = horizontalPadding
@@ -343,21 +359,22 @@ public class LoungeViewController: UIViewController {
     
     //MARK: Methods you may call
     
-    public func newMessage(var newMessage: LoungeMessageProtocol) // call this when you want to send custom message (e.g. : picture), it's called automatically when send button is clicked
+    public func newMessage(_ newMessage: LoungeMessageProtocol) // call this when you want to send custom message (e.g. : picture), it's called automatically when send button is clicked
     {
+        var newMessage = newMessage
         newMessage.id = tmpId
         newMessage.fromMe = true
-        tmpId--
+        tmpId -= 1
         delegate!.sendNewMessage(newMessage)
         
         messageArray.append(newMessage)
-        self.tableView.insertRowsAtIndexPaths([NSIndexPath(forRow: self.messageArray.count - 1 + (self.hasMoreToLoad ? 1 : 0), inSection: 0)], withRowAnimation: .Bottom)
+        self.tableView.insertRows(at: [IndexPath(row: self.messageArray.count - 1 + (self.hasMoreToLoad ? 1 : 0), section: 0)], with: .bottom)
         
         textView.text = ""
         if let placeholderLB = placeholderLabel {
-            placeholderLB.hidden = false
+            placeholderLB.isHidden = false
         }
-        sendButton.enabled = false
+        sendButton.isEnabled = false
         textviewHeightConstraint?.constant = 35
         self.inputAccessoryView?.layoutIfNeeded()
         self.reloadInputViews()
@@ -366,7 +383,7 @@ public class LoungeViewController: UIViewController {
     
     //MARK: Methods you have to call
     
-    public func lastMessageIdReceived() -> Int? // use this method to get the last message id received, typically used for fetching new messages (id > lastIdReceived)
+    open func lastMessageIdReceived() -> Int? // use this method to get the last message id received, typically used for fetching new messages (id > lastIdReceived)
     {
         var idMessage : Int? = nil
         var i = messageArray.count - 1
@@ -378,13 +395,13 @@ public class LoungeViewController: UIViewController {
             {
                 idMessage = nil
             }
-            i--
+            i -= 1
         }
         return idMessage
     }
     
     // call this method when you did receive messages (this will be typically called by the dataSource)
-    public func newMessagesReceived(messages: [LoungeMessageProtocol]?)
+    open func newMessagesReceived(_ messages: [LoungeMessageProtocol]?)
     {
         if let messages = messages
         {
@@ -394,16 +411,16 @@ public class LoungeViewController: UIViewController {
                     return message.fromMe == false
                 })
                 
-                var newIndexPaths : [NSIndexPath] = []
+                var newIndexPaths : [IndexPath] = []
                 
                 for message in otherUserMessages {
                     
                     self.messageArray.append(message)
-                    newIndexPaths.append(NSIndexPath(forRow: self.messageArray.count - 1 + (self.hasMoreToLoad ? 1 : 0), inSection: 0))
+                    newIndexPaths.append(IndexPath(row: self.messageArray.count - 1 + (self.hasMoreToLoad ? 1 : 0), section: 0))
                 }
                 
                 if newIndexPaths.count > 0 {
-                    self.tableView.insertRowsAtIndexPaths(newIndexPaths, withRowAnimation: .Bottom)
+                    self.tableView.insertRows(at: newIndexPaths, with: .bottom)
                     self.scrollToLastCell(true)
                 }
             }
@@ -414,21 +431,21 @@ public class LoungeViewController: UIViewController {
 // MARK: - Delegates Methods
 extension LoungeViewController: UITextViewDelegate {
     
-    public func textViewDidChange(textView: UITextView) {
+    public func textViewDidChange(_ textView: UITextView) {
         
         if textView.text.characters.count > 0 {
             if let placeholderLB = placeholderLabel {
                 
-                placeholderLB.hidden = true
+                placeholderLB.isHidden = true
             }
-            sendButton.enabled = sendButtonEnabled
+            sendButton.isEnabled = sendButtonEnabled
         }
         else {
             if let placeholderLB = placeholderLabel {
                 
-                placeholderLB.hidden = false
+                placeholderLB.isHidden = false
             }
-            sendButton.enabled = false
+            sendButton.isEnabled = false
         }
         
         if textView.contentSize.height > 120 {
@@ -450,11 +467,11 @@ extension LoungeViewController: UITextViewDelegate {
 
 extension LoungeViewController: UITableViewDataSource {
     
-    public func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return messageArray.count + (hasMoreToLoad ? 1 : 0)
     }
     
-    public func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         if hasMoreToLoad && indexPath.row == 0
         {
@@ -471,12 +488,12 @@ extension LoungeViewController: UITableViewDataSource {
 
 extension LoungeViewController: UITableViewDelegate {
     
-    public func tableView(tableView: UITableView, estimatedHeightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat
+    public func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat
     {
-        return self.tableView(tableView, heightForRowAtIndexPath: indexPath)
+        return self.tableView(tableView, heightForRowAt: indexPath)
     }
     
-    public func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat
+    public func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat
     {
         if hasMoreToLoad && indexPath.row == 0
         {
@@ -487,11 +504,11 @@ extension LoungeViewController: UITableViewDelegate {
         return delegate!.cellHeightForMessage(messageArray[currentIndex], width: tableView.frame.size.width)
     }
     
-    public func scrollViewDidEndDecelerating(scrollView: UIScrollView) {
+    public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         checkToLoadMore()
     }
     
-    public func scrollViewDidEndDragging(scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+    public func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         if decelerate == false {
             checkToLoadMore()
         }
@@ -502,32 +519,31 @@ extension LoungeViewController: UITableViewDelegate {
             
             dataSource!.getOldMessages(maxLoadedMessages, beforeMessage: messageArray.first!, completion: { messages in
                 
-                var indexPaths : [NSIndexPath] = []
-                
-                for (index, message) in messages.enumerate() {
-                    self.messageArray.insert(message, atIndex: 0)
-                    indexPaths.append(NSIndexPath(forRow: index + 1, inSection: 0))
+                var indexPaths : [IndexPath] = []
+
+                for (index, message) in messages.enumerated() {
+                    self.messageArray.insert(message, at: 0)
+                    indexPaths.append(IndexPath(row: index + 1, section: 0))
                 }
                 
-                let yOfLastCell = self.tableView.rectForRowAtIndexPath(NSIndexPath(forRow: 1, inSection: 0)).origin.y
-                
+                let yOfLastCell = self.tableView.rectForRow(at: IndexPath(row: 1, section: 0)).origin.y
                 if indexPaths.count > 0 {
                     UIView.setAnimationsEnabled(false)
                     self.tableView.beginUpdates()
-                    self.tableView.insertRowsAtIndexPaths(indexPaths, withRowAnimation: .None)
+                    self.tableView.insertRows(at: indexPaths, with: .none)
                     self.tableView.endUpdates()
                     UIView.setAnimationsEnabled(true)
-                    
-                    let newY = self.tableView.rectForRowAtIndexPath(NSIndexPath(forRow: messages.count + 1, inSection: 0)).origin.y - yOfLastCell
-                    
-                    self.tableView.setContentOffset(CGPointMake(0, newY), animated: false)
+
+                    let newY = self.tableView.rectForRow(at: IndexPath(row: messages.count + 1, section: 0)).origin.y - yOfLastCell
+
+                    self.tableView.setContentOffset(CGPoint(x: 0, y: newY), animated: false)
                 }
                 
                 if (messages.count < self.maxLoadedMessages)
                 {
                     self.hasMoreToLoad = false
                     self.tableView.beginUpdates()
-                    self.tableView.deleteRowsAtIndexPaths([NSIndexPath(forRow: 0, inSection: 0)], withRowAnimation: .None)
+                    self.tableView.deleteRows(at: [IndexPath(row: 0, section: 0)], with: .none)
                     self.tableView.endUpdates()
                 }
             })
@@ -537,8 +553,8 @@ extension LoungeViewController: UITableViewDelegate {
 
 extension UIView {
     
-    func pinSubview(subview: UIView, on: NSLayoutAttribute, relation: NSLayoutRelation = .Equal, space : CGFloat = 0) -> NSLayoutConstraint {
-        let constraint : NSLayoutConstraint = NSLayoutConstraint(item: (on == .Top || on == .Leading ? subview : self), attribute: on, relatedBy: relation, toItem: (on == .Top || on == .Leading ? self : subview), attribute: on, multiplier: 1, constant: space)
+    func pinSubview(_ subview: UIView, on: NSLayoutAttribute, relation: NSLayoutRelation = .equal, space : CGFloat = 0) -> NSLayoutConstraint {
+        let constraint : NSLayoutConstraint = NSLayoutConstraint(item: (on == .top || on == .leading ? subview : self), attribute: on, relatedBy: relation, toItem: (on == .top || on == .leading ? self : subview), attribute: on, multiplier: 1, constant: space)
         
         self.addConstraint(constraint)
         
@@ -553,41 +569,41 @@ extension UIView {
     //        return constraint
     //    }
     
-    func setSpace(relation: NSLayoutRelation = .Equal, space: CGFloat = 0, on: NSLayoutAttribute, ofView: UIView, fromView: AnyObject) -> NSLayoutConstraint {
+    func setSpace(_ relation: NSLayoutRelation = .equal, space: CGFloat = 0, on: NSLayoutAttribute, ofView: UIView, fromView: AnyObject) -> NSLayoutConstraint {
         let oppositeSide: NSLayoutAttribute
         
         switch on {
-        case .Top:
-            oppositeSide = .Bottom
-        case .Bottom:
-            oppositeSide = .Top
-        case .Leading:
-            oppositeSide = .Trailing
-        case .Trailing:
-            oppositeSide = .Leading
+        case .top:
+            oppositeSide = .bottom
+        case .bottom:
+            oppositeSide = .top
+        case .leading:
+            oppositeSide = .trailing
+        case .trailing:
+            oppositeSide = .leading
         default:
             oppositeSide = on
         }
         
-        let constraint : NSLayoutConstraint = NSLayoutConstraint(item: (on == .Top || on == .Leading ? ofView : fromView),
-            attribute: (on == .Top || on == .Leading ? on : oppositeSide), relatedBy: relation,
-            toItem: (on == .Top || on == .Leading ? fromView : ofView),
-            attribute: (on == .Top || on == .Leading ? oppositeSide : on), multiplier: 1, constant: space)
+        let constraint : NSLayoutConstraint = NSLayoutConstraint(item: (on == .top || on == .leading ? ofView : fromView),
+            attribute: (on == .top || on == .leading ? on : oppositeSide), relatedBy: relation,
+            toItem: (on == .top || on == .leading ? fromView : ofView),
+            attribute: (on == .top || on == .leading ? oppositeSide : on), multiplier: 1, constant: space)
         
         self.addConstraint(constraint)
         
         return constraint
     }
     
-    func align(theView: UIView, andTheView: UIView, relation: NSLayoutRelation = .Equal, on: NSLayoutAttribute, space: CGFloat = 0) -> NSLayoutConstraint
+    func align(_ theView: UIView, andTheView: UIView, relation: NSLayoutRelation = .equal, on: NSLayoutAttribute, space: CGFloat = 0) -> NSLayoutConstraint
     {
         let constraint : NSLayoutConstraint = NSLayoutConstraint(item: theView, attribute: on, relatedBy: relation, toItem: andTheView, attribute: on, multiplier: 1, constant: space)
         self.addConstraint(constraint)
         return constraint
     }
     
-    func set(widthOrHeight: NSLayoutAttribute, relation: NSLayoutRelation = .Equal, size: CGFloat = 0) -> NSLayoutConstraint {
-        let constraint : NSLayoutConstraint = NSLayoutConstraint(item: self, attribute: widthOrHeight, relatedBy: relation, toItem: nil, attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1, constant: size)
+    func set(_ widthOrHeight: NSLayoutAttribute, relation: NSLayoutRelation = .equal, size: CGFloat = 0) -> NSLayoutConstraint {
+        let constraint : NSLayoutConstraint = NSLayoutConstraint(item: self, attribute: widthOrHeight, relatedBy: relation, toItem: nil, attribute: NSLayoutAttribute.notAnAttribute, multiplier: 1, constant: size)
         self.addConstraint(constraint)
         return constraint
     }

@@ -22,10 +22,14 @@ class ViewController: LoungeViewController {
         super.viewDidLoad()
         
         //TODO: customizations
-        setPlaceholder("Type here", color: UIColor.darkGrayColor())
+        setPlaceholder("Type here", color: UIColor.darkGray)
         setSeparatorColor(UIColor(red: 66/255.0, green: 122/255.0, blue: 185/255.0, alpha: 1))
 //        setTopViewHeight(120) // only if you set a top View you can adjust it's height this way
         
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
     }
     
     // demo only
@@ -35,7 +39,7 @@ class ViewController: LoungeViewController {
         self.newMessagesReceived(self.getMessagesAfter(self.lastMessageIdReceived()))
     }
     
-    func getMessagesAfter(messageId: Int?) -> [LoungeMessageProtocol] // used for demo only
+    func getMessagesAfter(_ messageId: Int?) -> [LoungeMessageProtocol] // used for demo only
     {
         var msg = ChatMessage()
         
@@ -50,73 +54,86 @@ class ViewController: LoungeViewController {
             msg.text = "Hi I'm Blackagar Boltagon, welcome to the quiet room."
         }
         
+        if msg.id == 3 {
+            self.displayAlert()
+        }
+        
         return [msg]
+    }
+    
+    func displayAlert()
+    {
+        let alert = UIAlertController(title: "I said Ssshh!", message: "(This is for testing that the inputAccessoryView is still present when alert is fired)", preferredStyle: .alert)
+        
+        let dismissAction = UIAlertAction(title: NSLocalizedString("Cancel", comment: ""), style: .cancel, handler: nil)
+        alert.addAction(dismissAction)
+        
+        self.present(alert, animated: true, completion: nil)
     }
 }
 
 extension ViewController : LoungeDataSource {
     
-    func getLastMessages(limit: Int, completion : (messages: [LoungeMessageProtocol]?) -> ())
+    func getLastMessages(_ limit: Int, completion : (_ messages: [LoungeMessageProtocol]?) -> ())
     {
         //TODO: fetch last messages from your server or local Datadase
-        completion(messages: [])
+        completion([])
     }
     
-    func getOldMessages(limit: Int, beforeMessage: LoungeMessageProtocol, completion : (messages: [LoungeMessageProtocol]) -> ())
+    func getOldMessages(_ limit: Int, beforeMessage: LoungeMessageProtocol, completion : (_ messages: [LoungeMessageProtocol]) -> ())
     {
         //TODO: fetch messages before "beforeMessage" from your server or local Database
-        completion(messages: [])
+        completion([])
     }
 }
 
 extension ViewController : LoungeDelegate {
     
-    func cellForLoadMore(indexPath: NSIndexPath) -> UITableViewCell
+    func cellForLoadMore(_ indexPath: IndexPath) -> UITableViewCell
     {
-        let cell = self.tableView.dequeueReusableCellWithIdentifier("LoadMoreCell", forIndexPath: indexPath)
-        
+        let cell = self.tableView.dequeueReusableCell(withIdentifier: "LoadMoreCell", for: indexPath)
         return cell
     }
     
-    func cellForMessage(message: LoungeMessageProtocol, indexPath: NSIndexPath, width: CGFloat) -> UITableViewCell
+    func cellForMessage(_ message: LoungeMessageProtocol, indexPath: IndexPath, width: CGFloat) -> UITableViewCell
     {
         let msg = message as! ChatMessage
         
-        let cell = self.tableView.dequeueReusableCellWithIdentifier((msg.fromMe ? "MyMessageCell" : "OthersMessageCell"), forIndexPath: indexPath) as! ChatMessageCell
+        let cell = self.tableView.dequeueReusableCell(withIdentifier: (msg.fromMe ? "MyMessageCell" : "OthersMessageCell"), for: indexPath) as! ChatMessageCell
         
         cell.textLB.text = msg.text
         
         return cell
     }
     
-    func cellHeightForMessage(message: LoungeMessageProtocol, width: CGFloat) -> CGFloat
+    func cellHeightForMessage(_ message: LoungeMessageProtocol, width: CGFloat) -> CGFloat
     {
         let msg = message as! ChatMessage
         let widthAvailableForText = width - 150 // we remove the size of constraints + space we want on the right or left of the bubble
         
-        let textHeight = ceil(msg.text.boundingRectWithSize(CGSizeMake(widthAvailableForText, 9999), options: [NSStringDrawingOptions.UsesLineFragmentOrigin, NSStringDrawingOptions.UsesFontLeading], attributes:[NSFontAttributeName: UIFont(name: MessageCellValues.labelFontName, size:  MessageCellValues.labelFontSize)!], context:nil).size.height)
+        let textHeight = ceil(msg.text.boundingRect(with: CGSize(width: widthAvailableForText, height: 9999), options: [NSStringDrawingOptions.usesLineFragmentOrigin, NSStringDrawingOptions.usesFontLeading], attributes:[NSFontAttributeName: UIFont(name: MessageCellValues.labelFontName, size:  MessageCellValues.labelFontSize)!], context:nil).size.height)
         
         return textHeight + 30 // we add the size of our constraints
     }
     
-    func messageFromText(text: String) -> LoungeMessageProtocol // given a text as String, you should return the appropriate object conform to LoungeMessageProtocol
+    func messageFromText(_ text: String) -> LoungeMessageProtocol // given a text as String, you should return the appropriate object conform to LoungeMessageProtocol
     {
         var msg = ChatMessage()
         msg.text = text
         return msg
     }
     
-    func sendNewMessage(message: LoungeMessageProtocol)
+    func sendNewMessage(_ message: LoungeMessageProtocol)
     {
         //TODO: send the message to your server
         
         // demo only
-        self.performSelector("fakeServerCallBack", withObject: nil, afterDelay: 1)
+        self.perform("fakeServerCallBack", with: nil, afterDelay: 1)
     }
     
     // optionnal
     
-    func keyBoardStateChanged(displayed displayed: Bool) {
+    func keyBoardStateChanged(displayed: Bool) {
         
         if displayed
         {

@@ -1,5 +1,5 @@
 PODS:
-  - Lounge (0.1.0)
+  - Lounge (0.2.1)
 
 DEPENDENCIES:
   - Lounge (from `../`)
@@ -9,6 +9,8 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  Lounge: 56a69b5b744dc12d7c4f33f7dba6dee7a7121ed6
+  Lounge: a79dba272cdc6640c2ef7705d45d733afa2b7b30
 
-COCOAPODS: 0.39.0
+PODFILE CHECKSUM: d0afe7a7f4c4ffb4ea571a01c5a00ff7f8e54758
+
+COCOAPODS: 1.2.0

@@ -1,6 +1,6 @@
 {
   "name": "Lounge",
-  "version": "0.1.0",
+  "version": "0.2.1",
   "summary": "A subclass of UIViewController for chat screens.",
   "description": "Lounge help you make chat screen by providing functionnalities common to all chats displaying messages, browse chat history, interactive keyboard with input field, send button etc.",
   "homepage": "https://github.com/OMTS/Lounge",
@@ -10,7 +10,7 @@
   },
   "source": {
     "git": "https://github.com/OMTS/Lounge.git",
-    "tag": "0.1.0"
+    "tag": "0.2.1"
   },
   "platforms": {
     "ios": "8.0"
