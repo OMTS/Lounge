@@ -124,7 +124,7 @@ open class LoungeViewController: UIViewController {
         sendButton.isEnabled = false
         
         textView.delegate = self
-        sendButton.addTarget(self, action: "sendClicked", for: .touchUpInside)
+        sendButton.addTarget(self, action: #selector(LoungeViewController.sendClicked), for: .touchUpInside)
         
         if self.canBecomeFirstResponder {
             self.becomeFirstResponder()
@@ -188,20 +188,20 @@ open class LoungeViewController: UIViewController {
 
         // pin topView
         if let viewTop = topView {
-            self.view.pinSubview(viewTop, on: .leading)
-            self.view.setSpace(on: .top, ofView: viewTop, fromView: self.topLayoutGuide)
-            self.view.pinSubview(viewTop, on: .trailing)
-            self.view.setSpace(space: 0, on: .bottom, ofView: viewTop, fromView: tableView)
+            _ = self.view.pinSubview(viewTop, on: .leading)
+            _ = self.view.setSpace(on: .top, ofView: viewTop, fromView: self.topLayoutGuide)
+            _ = self.view.pinSubview(viewTop, on: .trailing)
+            _ = self.view.setSpace(space: 0, on: .bottom, ofView: viewTop, fromView: tableView)
         }
         else {
-            self.view.setSpace(on: .top, ofView: self.tableView, fromView: self.topLayoutGuide)
+            _ = self.view.setSpace(on: .top, ofView: self.tableView, fromView: self.topLayoutGuide)
 //            self.view.pinSubview(tableView, on: .Top)
         }
         
         // pin tableView
-        self.view.pinSubview(tableView, on: .leading)
-        self.view.pinSubview(tableView, on: .trailing)
-        self.view.pinSubview(tableView, on: .bottom)
+        _ = self.view.pinSubview(tableView, on: .leading)
+        _ = self.view.pinSubview(tableView, on: .trailing)
+        _ = self.view.pinSubview(tableView, on: .bottom)
         
         // input message view
         inputMessageView.removeFromSuperview()
@@ -211,26 +211,26 @@ open class LoungeViewController: UIViewController {
         separator.translatesAutoresizingMaskIntoConstraints = false
         separator.backgroundColor = UIColor.clear
         inputMessageView.addSubview(separator)
-        inputMessageView.pinSubview(separator, on: .top)
-        inputMessageView.pinSubview(separator, on: .leading)
-        inputMessageView.pinSubview(separator, on: .trailing)
-        separator.set(.height, size: 0.5)
+        _ = inputMessageView.pinSubview(separator, on: .top)
+        _ = inputMessageView.pinSubview(separator, on: .leading)
+        _ = inputMessageView.pinSubview(separator, on: .trailing)
+        _ = separator.set(.height, size: 0.5)
         
         // send button
         buttonRightPadding = inputMessageView.pinSubview(sendButton, on: .trailing, space : 15)
         buttonTopPadding = inputMessageView.pinSubview(sendButton, on: .top, relation: .greaterThanOrEqual, space: 5)
         buttonBottomPadding = inputMessageView.pinSubview(sendButton, on: .bottom, space : 5)
         if sendButton.constraints.count == 0 {
-            sendButton.set(.height, size: 35)
+            _ = sendButton.set(.height, size: 35)
         }
 
         
         // left input View
         if let leftViewMessage = leftInputView {
-            inputMessageView.pinSubview(leftViewMessage, on: .leading, space : 5)
-            inputMessageView.pinSubview(leftViewMessage, on: .top, relation: .greaterThanOrEqual, space : 5)
-            inputMessageView.pinSubview(leftViewMessage, on: .bottom, space : 5)
-            inputMessageView.setSpace(space: 5, on: .trailing, ofView: leftViewMessage, fromView: textView)
+            _ = inputMessageView.pinSubview(leftViewMessage, on: .leading, space : 5)
+            _ = inputMessageView.pinSubview(leftViewMessage, on: .top, relation: .greaterThanOrEqual, space : 5)
+            _ = inputMessageView.pinSubview(leftViewMessage, on: .bottom, space : 5)
+            _ = inputMessageView.setSpace(space: 5, on: .trailing, ofView: leftViewMessage, fromView: textView)
         }
         else {
             textViewLeftPadding = inputMessageView.pinSubview(textView, on: .leading, space: 15)
@@ -245,19 +245,19 @@ open class LoungeViewController: UIViewController {
         
         // empty state view
         if let emptyStateView = emptyStateView {
-            self.view.align(emptyStateView, andTheView: tableView, on: .top)
+            _ = self.view.align(emptyStateView, andTheView: tableView, on: .top)
             emptyStateBottomConstraint = self.view.align(emptyStateView, andTheView: tableView, on: .bottom)
-            self.view.align(emptyStateView, andTheView: tableView, on: .right)
-            self.view.align(emptyStateView, andTheView: tableView, on: .left)
+            _ = self.view.align(emptyStateView, andTheView: tableView, on: .right)
+            _ = self.view.align(emptyStateView, andTheView: tableView, on: .left)
         }
     }
     
     override open func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        NotificationCenter.default.addObserver(self, selector: "keyboardWillShow:", name: NSNotification.Name.UIKeyboardWillShow, object: nil)
-        NotificationCenter.default.addObserver(self, selector: "keyboardWillHide:", name: NSNotification.Name.UIKeyboardWillHide, object: nil)
-        NotificationCenter.default.addObserver(self, selector: "keyboardDidHide:", name: NSNotification.Name.UIKeyboardDidHide, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(LoungeViewController.keyboardWillShow(_:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(LoungeViewController.keyboardWillHide(_:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(LoungeViewController.keyboardDidHide(_:)), name: NSNotification.Name.UIKeyboardDidHide, object: nil)
     }
     
     override open func viewDidAppear(_ animated: Bool) {
@@ -346,9 +346,9 @@ open class LoungeViewController: UIViewController {
             placeholderLabel!.translatesAutoresizingMaskIntoConstraints = false
             placeholderLabel?.font = textView.font
             
-            inputMessageView.align(placeholderLabel!, andTheView: textView, on: .top, space:  textView.contentInset.top)
-            inputMessageView.align(placeholderLabel!, andTheView: textView, on: .bottom, space:  textView.contentInset.bottom)
-            inputMessageView.align(placeholderLabel!, andTheView: textView, on: .leading, space: 5)
+            _ = inputMessageView.align(placeholderLabel!, andTheView: textView, on: .top, space:  textView.contentInset.top)
+            _ = inputMessageView.align(placeholderLabel!, andTheView: textView, on: .bottom, space:  textView.contentInset.bottom)
+            _ = inputMessageView.align(placeholderLabel!, andTheView: textView, on: .leading, space: 5)
         }
         
         placeholderLabel!.text = text

@@ -11,6 +11,8 @@ import Lounge
 
 class ViewController: LoungeViewController {
 
+	var idOfLastMessageReceived: Int?
+
     override func loadView() {
         super.loadView()
         
@@ -36,7 +38,7 @@ class ViewController: LoungeViewController {
     func fakeServerCallBack()
     {
         // simulate the call to the server for fetching new messages.
-        self.newMessagesReceived(self.getMessagesAfter(self.lastMessageIdReceived()))
+        self.newMessagesReceived(self.getMessagesAfter(self.idOfLastMessageReceived))
     }
     
     func getMessagesAfter(_ messageId: Int?) -> [LoungeMessageProtocol] // used for demo only
@@ -73,14 +75,14 @@ class ViewController: LoungeViewController {
 }
 
 extension ViewController : LoungeDataSource {
-    
-    func getLastMessages(_ limit: Int, completion : (_ messages: [LoungeMessageProtocol]?) -> ())
+
+    func getLastMessages(_ limit: Int, completion: @escaping (_ messages: [LoungeMessageProtocol]?) -> ())
     {
         //TODO: fetch last messages from your server or local Datadase
         completion([])
     }
     
-    func getOldMessages(_ limit: Int, beforeMessage: LoungeMessageProtocol, completion : (_ messages: [LoungeMessageProtocol]) -> ())
+    func getOldMessages(_ limit: Int, beforeMessage: LoungeMessageProtocol, completion: @escaping (_ messages: [LoungeMessageProtocol]) -> ())
     {
         //TODO: fetch messages before "beforeMessage" from your server or local Database
         completion([])
@@ -128,7 +130,7 @@ extension ViewController : LoungeDelegate {
         //TODO: send the message to your server
         
         // demo only
-        self.perform("fakeServerCallBack", with: nil, afterDelay: 1)
+        self.perform(#selector(ViewController.fakeServerCallBack), with: nil, afterDelay: 1)
     }
     
     // optionnal
