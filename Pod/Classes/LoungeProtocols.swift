@@ -19,8 +19,6 @@ public protocol LoungeDelegate : NSObjectProtocol
     func cellForLoadMore(_ indexPath: IndexPath) -> UITableViewCell
     func cellForMessage(_ message: LoungeMessageProtocol, indexPath: IndexPath, width: CGFloat) -> UITableViewCell
     func cellHeightForMessage(_ message: LoungeMessageProtocol, width: CGFloat) -> CGFloat
-    func messageFromText(_ text: String) -> LoungeMessageProtocol // given a text as String, you should return the appropriate object conform to ChatMessageProtocol
-    func sendNewMessage(_ message: LoungeMessageProtocol)
     // optionnal
     func keyBoardStateChanged(displayed: Bool)
 }
@@ -35,6 +33,10 @@ public extension LoungeDelegate
 
 public protocol LoungeDataSource : NSObjectProtocol
 {
-    func getLastMessages(_ limit: Int, completion : (_ messages: [LoungeMessageProtocol]?) -> ())
-    func getOldMessages(_ limit: Int, beforeMessage: LoungeMessageProtocol, completion : (_ messages: [LoungeMessageProtocol]) -> ())
+    var idOfLastMessageReceived: Int? { get set } // use this var to know the last message id received, typically used for fetching new messages (id > idOfLastMessageReceived)
+
+    func getLastMessages(_ limit: Int, completion: @escaping (_ messages: [LoungeMessageProtocol]?) -> ())
+    func getOldMessages(_ limit: Int, beforeMessage: LoungeMessageProtocol, completion: @escaping (_ messages: [LoungeMessageProtocol]) -> ())
+    func messageFromText(_ text: String) -> LoungeMessageProtocol // given a text as String, you should return the appropriate object conform to ChatMessageProtocol
+    func sendNewMessage(_ message: LoungeMessageProtocol)
 }

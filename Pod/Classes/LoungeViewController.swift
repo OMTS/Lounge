@@ -72,23 +72,13 @@ open class LoungeViewController: UIViewController {
             return inputMessageView
         }
     }
-    
-    open var sendButtonEnabled: Bool = true { // This let you manage the send button status (e.g.: when network connection is lost)
+
+    /// This let you manage the send button status (e.g.: when network connection is lost)
+    open var sendButtonEnabled: Bool = true {
         didSet {
             if let sendButton = sendButton
             {
-                if sendButton.isEnabled == true && sendButtonEnabled == false
-                {
-                    sendButton.isEnabled = false
-                }
-                
-                if (sendButton.isEnabled == false && sendButtonEnabled == true)
-                {
-                    if textView.text.characters.count > 0
-                    {
-                        sendButton.isEnabled = true
-                    }
-                }
+                sendButton.isEnabled = textView.text.characters.count > 0 && sendButtonEnabled
             }
         }
     }
@@ -151,6 +141,7 @@ open class LoungeViewController: UIViewController {
             if let messages = messages
             {
                 self.messageArray = messages
+                self.updateIdOfLastMessageReceived()
                 if messages.count == self.maxLoadedMessages
                 {
                     self.hasMoreToLoad = true
@@ -229,7 +220,9 @@ open class LoungeViewController: UIViewController {
         buttonRightPadding = inputMessageView.pinSubview(sendButton, on: .trailing, space : 15)
         buttonTopPadding = inputMessageView.pinSubview(sendButton, on: .top, relation: .greaterThanOrEqual, space: 5)
         buttonBottomPadding = inputMessageView.pinSubview(sendButton, on: .bottom, space : 5)
-        sendButton.set(.height, size: 35)
+        if sendButton.constraints.count == 0 {
+            sendButton.set(.height, size: 35)
+        }
 
         
         // left input View
@@ -248,6 +241,7 @@ open class LoungeViewController: UIViewController {
         textViewBottomPadding = inputMessageView.pinSubview(textView, on: .bottom, space : 5)
         textViewRightPadding = inputMessageView.setSpace(space: 15, on: .leading, ofView: sendButton, fromView: textView)
         textviewHeightConstraint = textView.set(.height, size: 35)
+        textviewHeightConstraint?.priority = 999
         
         // empty state view
         if let emptyStateView = emptyStateView {
@@ -280,10 +274,11 @@ open class LoungeViewController: UIViewController {
     func keyboardWillShow(_ notification: Notification) {
         
         if let keyboardSize = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
-            tableView.contentInset = UIEdgeInsetsMake(0, 0, keyboardSize.height, 0)
-            emptyStateBottomConstraint?.constant = -keyboardSize.height
+            let height = keyboardSize.height - (tabBarController?.tabBar.bounds.size.height ?? 0)
+            tableView.contentInset = UIEdgeInsetsMake(0, 0, height, 0)
+            emptyStateBottomConstraint?.constant = -height
             self.view.layoutIfNeeded()
-            if keyboardSize.height > inputMessageView.frame.size.height {
+            if height > inputMessageView.frame.size.height {
                 self.scrollToLastCell()
                 delegate?.keyBoardStateChanged(displayed: true)
             }
@@ -309,11 +304,28 @@ open class LoungeViewController: UIViewController {
             tableView.scrollToRow(at: lastIndexPath, at: .bottom, animated: animated)
         }
     }
-    
+
+    func updateIdOfLastMessageReceived()
+    {
+        var idMessage : Int? = nil
+        var i = messageArray.count - 1
+
+        while idMessage == nil && i >= 0
+        {
+            idMessage = messageArray[i].id
+            if idMessage < 0
+            {
+                idMessage = nil
+            }
+            i -= 1
+        }
+        dataSource?.idOfLastMessageReceived = idMessage
+    }
+
     // MARK: - Internal Action methods
     
-    func sendClicked() {
-        let message = delegate!.messageFromText(textView.text)
+    open func sendClicked() {
+        let message = dataSource!.messageFromText(textView.text)
         newMessage(message)
     }
     
@@ -365,7 +377,7 @@ open class LoungeViewController: UIViewController {
         newMessage.id = tmpId
         newMessage.fromMe = true
         tmpId -= 1
-        delegate!.sendNewMessage(newMessage)
+        dataSource!.sendNewMessage(newMessage)
         
         messageArray.append(newMessage)
         self.tableView.insertRows(at: [IndexPath(row: self.messageArray.count - 1 + (self.hasMoreToLoad ? 1 : 0), section: 0)], with: .bottom)
@@ -383,54 +395,36 @@ open class LoungeViewController: UIViewController {
     
     //MARK: Methods you have to call
     
-    open func lastMessageIdReceived() -> Int? // use this method to get the last message id received, typically used for fetching new messages (id > lastIdReceived)
-    {
-        var idMessage : Int? = nil
-        var i = messageArray.count - 1
-        
-        while idMessage == nil && i >= 0
-        {
-            idMessage = messageArray[i].id
-            if idMessage < 0
-            {
-                idMessage = nil
-            }
-            i -= 1
-        }
-        return idMessage
-    }
-    
     // call this method when you did receive messages (this will be typically called by the dataSource)
-    open func newMessagesReceived(_ messages: [LoungeMessageProtocol]?)
+    open func newMessagesReceived(_ messages: [LoungeMessageProtocol])
     {
-        if let messages = messages
-        {
-            if messages.count > 0
-            {
-                let otherUserMessages : [LoungeMessageProtocol] = messages.filter({ message in
-                    return message.fromMe == false
-                })
-                
-                var newIndexPaths : [IndexPath] = []
-                
-                for message in otherUserMessages {
-                    
-                    self.messageArray.append(message)
-                    newIndexPaths.append(IndexPath(row: self.messageArray.count - 1 + (self.hasMoreToLoad ? 1 : 0), section: 0))
-                }
-                
-                if newIndexPaths.count > 0 {
-                    self.tableView.insertRows(at: newIndexPaths, with: .bottom)
-                    self.scrollToLastCell(true)
-                }
-            }
+        guard messages.count > 0 else {
+            return
+        }
+
+        let otherUserMessages : [LoungeMessageProtocol] = messages.filter({ message in
+            return message.fromMe == false
+        })
+
+        var newIndexPaths : [IndexPath] = []
+
+        for message in otherUserMessages {
+
+            self.messageArray.append(message)
+            newIndexPaths.append(IndexPath(row: self.messageArray.count - 1 + (self.hasMoreToLoad ? 1 : 0), section: 0))
+        }
+        updateIdOfLastMessageReceived()
+
+        if newIndexPaths.count > 0 {
+            self.tableView.insertRows(at: newIndexPaths, with: .bottom)
+            self.scrollToLastCell(true)
         }
     }
 }
 
 // MARK: - Delegates Methods
 extension LoungeViewController: UITextViewDelegate {
-    
+
     public func textViewDidChange(_ textView: UITextView) {
         
         if textView.text.characters.count > 0 {
